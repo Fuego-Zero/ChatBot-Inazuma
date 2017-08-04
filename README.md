@@ -1,1 +1,1 @@
-# Inazuma@Tecent.QQ
+# ChatBot Inazuma
