@@ -1,1 +1,1 @@
-iface: bin/hubot -a qq --name 電
+worker: bin/hubot -a qq --name 電
