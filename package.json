@@ -25,6 +25,5 @@
     "node": "0.10.x"
   },
   "scripts": {
-    "start": "hubot-dotenv -n botname"
   }
 }
