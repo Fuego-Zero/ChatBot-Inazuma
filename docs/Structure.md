@@ -7,4 +7,5 @@ The project is organized as follows.
 - Characterized AI, Inazuma
 
 #### smi (Social media interface)
+SMI are hubot instances to report social-media event to Inazuma
 - Tecent QQ
