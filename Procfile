@@ -1,1 +1,1 @@
-web: bin/hubot -a qq --name 電
+iface: bin/hubot -a qq --name 電

@@ -46,7 +46,7 @@ jspm_packages
 # Yarn Integrity file
 .yarn-integrity
 
-# Custom launch batch
-run.cmd
+# Custom cmd 
+*.cmd
 
 .hubot_history
