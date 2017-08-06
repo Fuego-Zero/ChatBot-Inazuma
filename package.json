@@ -4,6 +4,7 @@
   "description": "A chatting AI written in NodeJS characterized as Inazuma, a kanmusu in web game KanColle",
   "main": "src/index.js",
   "scripts": {
+    "start": "node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,13 +16,17 @@
     "kancolle",
     "kanmusu",
     "inazuma",
-	"hubot",
-	"Tecent-QQ"
+    "hubot",
+    "Tecent-QQ"
   ],
   "author": "MomoCow",
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/momocow/ChatBot-Inazuma/issues"
   },
-  "homepage": "https://github.com/momocow/ChatBot-Inazuma#readme"
+  "homepage": "https://github.com/momocow/ChatBot-Inazuma#readme",
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "socket.io": "^2.0.3"
+  }
 }

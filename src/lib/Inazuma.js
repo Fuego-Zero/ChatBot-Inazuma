@@ -1,10 +1,13 @@
+const propProxy = require("./util/property-proxy");
+
 class Inazuma{
 	constructor(){
-		super();
-		
+		this.capas = [];
 	}
-	
-	get 
+
+	getCapas(){
+		return this.capas;
+	}
 }
 
-module.exports=
+module.exports = new Proxy(new Inazuma(), propProxy);
