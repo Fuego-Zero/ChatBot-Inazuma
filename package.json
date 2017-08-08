@@ -27,6 +27,8 @@
   "homepage": "https://github.com/momocow/ChatBot-Inazuma#readme",
   "dependencies": {
     "lodash": "^4.17.4",
-    "socket.io": "^2.0.3"
+    "node-ipc": "^9.1.0",
+    "socket-io": "^1.0.0",
+    "websocket": "^1.0.24"
   }
 }
