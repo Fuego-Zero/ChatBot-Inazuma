@@ -1,0 +1,5 @@
+id: "kancolle",
+module: ["exercise-reminder"]
+author:
+  name: "MomoCow",
+  site: "https://momocow.github.io/"

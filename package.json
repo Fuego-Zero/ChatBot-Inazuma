@@ -26,9 +26,12 @@
   },
   "homepage": "https://github.com/momocow/ChatBot-Inazuma#readme",
   "dependencies": {
+    "cson": "^4.1.0",
+    "fs-extra": "^4.0.1",
     "lodash": "^4.17.4",
     "node-ipc": "^9.1.0",
     "socket-io": "^1.0.0",
-    "websocket": "^1.0.24"
+    "websocket": "^1.0.24",
+    "yargs": "^8.0.2"
   }
 }

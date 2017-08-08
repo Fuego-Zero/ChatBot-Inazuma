@@ -1,10 +1,20 @@
-const logger = require("../../util/logger")("cq-bot");
-logger.setLevel(logger.INFO);
+const path = require("path");
+function _require(js){
+  if(js.startsWith("./")){
+    js = path.join("..", "..", js.substr(2));
+  }
+  return require(js);
+}
+
 const WebSocketClient = require('websocket').client;
+
+const logger = _require("./util/logger")("cq-bot");
+logger.setLevel(logger.INFO);
+const bus = _require("./init/event-buses").evbus_smi;
 
 let connection = null;
 
-function init(event_bus, cb){
+function init(cb){
   let cq = new WebSocketClient();
 
   cq.on('connect', function(conn) {
@@ -22,9 +32,11 @@ function init(event_bus, cb){
 
     conn.on('message', function(message) {
         if (message.type === 'utf8') {
-            logger.debug(message.utf8Data);
+            bus.emit("message.input", JSON.parse(message.utf8Data));
         }
     });
+
+    bus.on("message.output");
 
     cb();
   });

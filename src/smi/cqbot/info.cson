@@ -1,0 +1,3 @@
+id: "cq-bot",
+module: ["adapter"],
+proc: []

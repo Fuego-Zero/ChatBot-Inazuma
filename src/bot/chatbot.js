@@ -1,10 +1,7 @@
-const ipc = require("node-ipc");
-const path = require("path");
+const _ = require("lodash");
+const logger = require("../util/logger")("chatbot");
 
-const logger = require("../util/logger");
-const initEvents = require("./eventhandler");
-
-const SOCK_PATH = path.join(process.cwd(), "tmp");
+const const_proxy = require("../util/const-proxy");
 
 let DEFAULT_CONFIG = {
   name: "Chatbot_A",
@@ -14,29 +11,28 @@ let DEFAULT_CONFIG = {
   }
 };
 
-let BOT_INSTANCE = null;
-module.exports.ChatBot = class ChatBot{
-  constructor(new_config){
-    this.say(`Don't hurry. I'm waking up.`);
+class Chatbot{
+  constructor(config = {}){
+    _.assign(this, DEFAULT_CONFIG);
+    _.assign(this, config);
 
-    _.assign(this, _.assign(DEFAULT_CONFIG, new_config));
-
-    ipc.config.retry = 500;
-    ipc.serve(
-      path.join(SOCK_PATH, `${name}.sensory`),
-      function (){
-        initEvents(ipc.server);
-        this.say("Good morning, I'm ready!");
-      }
-    );
-    ipc.server.start();
+    this.SMI_HANDLER = require("../handler/smi-handler");
+    this.PLUGIN_HANDLER = require("../handler/plugin-handler");
   }
 
-  say(msg, ...sub){
-    console.log(msg, ...sub);
+  exec(smi_id, mod, func, ...args){
+    return this.SMI_HANDLER.call(smi_id, mod, func, ...args);
+  }
+
+  run(){
+    logger.info(`${this.name} starts running`);
+
+    this.PLUGIN_HANDLER.execAll();
+  }
+
+  getApi(smi_id, mod){
+    return this.SMI_HANDLER[smi_id][mod];
   }
 }
 
-module.exports.createBot = function(name){
-  return (BOT_INSTANCE = new ChatBot(name));
-}
+module.exports = new Proxy(new Chatbot(), const_proxy);

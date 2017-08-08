@@ -10,7 +10,7 @@ const FATAL = 50;
 let logger_map = {};
 
 class Logger{
-  constructor(name="root", lvl = ERROR){
+  constructor(name="root"){
     // CONST list
     this.ALL = ALL;
     this.DEBUG = DEBUG;
@@ -21,8 +21,17 @@ class Logger{
 
     // member
     this.enabled = true;
-    this.level = lvl;
     this.name = name;
+    this.level = ERROR;
+
+    // init log level
+    for(let last_ns = -1, parent_name = ""; (last_ns = name.lastIndexOf(".")) >= 0; name = parent_name){
+      parent_name = name.substr(0, last_ns);
+      if(logger_map[parent_name]){
+        this.level = logger_map[parent_name].level;
+        break;
+      }
+    }
   }
 
   debug(template, ...substitues){
@@ -55,6 +64,13 @@ class Logger{
 
   setLevel(lvl = this.ERROR){
     this.level = lvl;
+
+    // find all child loggers
+    for(let logger_key in logger_map){
+      if(logger_key.startsWith(this.name) && logger_map[logger_key].level < lvl){
+        logger_map[logger_key].level = lvl;
+      }
+    }
   }
 
   off(){
@@ -65,10 +81,12 @@ class Logger{
     this.enabled = true;
   }
 
-  static getLogger(name = "root"){
+  static getLogger(name){
+    name = (!name)? "root": (name.startsWith("root"))? name: `root.${name}`;
     return (logger_map[name])? logger_map[name]: (logger_map[name] = new Proxy(new Logger(name), constProxy));
   }
 }
 
+// init root logger
 logger_map.root = Logger.getLogger("root");
 module.exports = Logger.getLogger;
