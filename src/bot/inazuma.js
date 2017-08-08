@@ -1,5 +1,5 @@
 const const_proxy = require("../util/const-proxy");
-const {ChatBot} = require("./bot/chatbot");
+const Chatbot = require("./chatbot");
 
 const CONFIG = {
 	name: "電",
@@ -10,10 +10,10 @@ const CONFIG = {
 	}
 };
 
-class Inazuma extends ChatBot{
+class Inazuma extends Chatbot{
 	constructor(){
 		super(CONFIG);
 	}
 }
 
-module.exports = new Proxy(new Chatbot(), const_proxy);
+module.exports = new Proxy(new Inazuma(), const_proxy);

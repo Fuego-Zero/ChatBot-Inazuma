@@ -2,6 +2,7 @@ const fs = require("fs-extra");
 const {EventEmitter} = require("events");
 const path = require("path");
 const _ = require("lodash");
+const CSON = require("cson");
 
 const const_proxy = require("../util/const-proxy");
 const ifs = require("../util/fs");
@@ -23,7 +24,7 @@ class SmiHandler extends EventEmitter{
 
   // proxy the module functions for plug-ins
   call(smi_id, mod, func, ...args){
-    return this.SMI_LIST[smi_id][mod][func](...args):
+    return this.SMI_LIST[smi_id][mod][func](...args);
   }
 
   getModule(smi_id, mod){

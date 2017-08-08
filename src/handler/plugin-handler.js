@@ -1,6 +1,8 @@
 const {EventEmitter} = require("events");
 const fs = require("fs-extra");
 const _ = require("lodash");
+const path = require("path");
+const CSON = require("cson");
 
 const ifs = require("../util/fs");
 const logger = require("../util/logger")("smi-handler");
@@ -19,12 +21,12 @@ class PluginHandler extends EventEmitter{
 
   // proxy the module functions for plug-ins
   exec(plugin_id, mod){
-    return setImmediate(this.PLUGIN_LIST[plugin_id][mod]):
+    return setImmediate(this.PLUGIN_LIST[plugin_id][mod]);
   }
 
   execAll(){
     logger.info("Execute all plugins");
-    for(let plugin of this.PLUGIN_LIST){
+    for(let plugin of _.keys(this.PLUGIN_LIST)){
       for(let mod of plugin){
         this.exec(plugin, mod);
         logger.debug(`Module '${mod}' from '${plugin}' starts`);

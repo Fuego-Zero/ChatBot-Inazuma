@@ -1,7 +1,8 @@
-const cq = global.bot.getApi("cq-bot", "adapter");
+let cq;
 let loop = null;
 
 function checkExercTime(){
+	console.log("checking");
   let current = new Date();
   let target = new Date(`${current.getFullYear()}.${current.getMonth() + 1}.${current.getDate()} 01:30:00`);
 
@@ -15,6 +16,7 @@ function checkExercTime(){
 }
 
 function run(){
+  cq = global.bot.getApi("cq-bot", "adapter");
   loop = setInterval(checkExercTime, 1000);
 }
 

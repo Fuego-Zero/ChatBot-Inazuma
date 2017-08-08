@@ -11,7 +11,7 @@ let DEFAULT_CONFIG = {
   }
 };
 
-class Chatbot{
+module.exports = class Chatbot{
   constructor(config = {}){
     _.assign(this, DEFAULT_CONFIG);
     _.assign(this, config);
@@ -28,11 +28,11 @@ class Chatbot{
     logger.info(`${this.name} starts running`);
 
     this.PLUGIN_HANDLER.execAll();
+	
+	setInterval(()=>{}, 10000);
   }
 
   getApi(smi_id, mod){
     return this.SMI_HANDLER[smi_id][mod];
   }
-}
-
-module.exports = new Proxy(new Chatbot(), const_proxy);
+};

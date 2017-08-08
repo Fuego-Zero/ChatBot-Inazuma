@@ -1,3 +1,5 @@
+global.app_name = "chatbot-inazuma";
+
 const config = require("./init/default-configs");
 const logger = require("./util/logger")();
 
@@ -8,7 +10,6 @@ else{
   logger.setLevel(logger.ERROR);
 }
 
-global.app_name = "chatbot-inazuma";
 global.bot = require("./bot/inazuma");
 bot.run();
 
