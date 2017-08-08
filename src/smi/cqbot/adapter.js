@@ -10,7 +10,6 @@ const WebSocketClient = require('websocket').client;
 
 const logger = _require("./util/logger")("cq-bot");
 logger.setLevel(logger.INFO);
-const bus = _require("./init/event-buses").evbus_smi;
 
 let connection = null;
 
@@ -32,11 +31,13 @@ function init(cb){
 
     conn.on('message', function(message) {
         if (message.type === 'utf8') {
-            bus.emit("message.input", JSON.parse(message.utf8Data));
+            global.bot.handle("message.input", JSON.parse(message.utf8Data));
         }
     });
 
-    bus.on("message.output");
+    global.bot.on("message.output", function(){
+
+    });
 
     cb();
   });

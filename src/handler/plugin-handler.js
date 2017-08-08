@@ -27,7 +27,7 @@ class PluginHandler extends EventEmitter{
   execAll(){
     logger.info("Execute all plugins");
     for(let plugin of _.keys(this.PLUGIN_LIST)){
-      for(let mod of plugin){
+      for(let mod of _.keys(this.PLUGIN_LIST[plugin])){
         this.exec(plugin, mod);
         logger.debug(`Module '${mod}' from '${plugin}' starts`);
       }
@@ -44,7 +44,7 @@ class PluginHandler extends EventEmitter{
       return;
     }
 
-    this.PLUGIN_LIST[plugin_id][mod] = api.run;
+    _.set(this.PLUGIN_LIST, [plugin_id, mod], api.run);
     logger.info(`A module '${mod}' from plugin '${plugin_id}' is registered`);
   }
 
@@ -63,13 +63,15 @@ class PluginHandler extends EventEmitter{
       }
 
       let mod = "";
+      let rel_path = "";
       try{
         for(mod of plugin_info.module){
-          this.register(plugin_info.id, mod, require(path.join(plugin, mod)));
+          rel_path = path.relative(__dirname, path.resolve(plugin, mod));
+          this.register(plugin_info.id, mod, require(rel_path));
         }
       }
       catch(e){
-        logger.warn(`Fail to read module '${mod}' from ${plugin}`);
+        logger.warn(`Fail to read module '${mod}' from ${rel_path}`);
         logger.warn(e);
       }
     }

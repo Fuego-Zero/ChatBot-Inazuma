@@ -15,7 +15,53 @@ class SmiHandler extends EventEmitter{
     super();
 
     this.SMI_LIST = {};
+    this.SMI_STAT = {};
     this.loadFromSmiDir();
+  }
+
+  isReady(smi_id, mod){
+    if(!smi_id && mod){
+      return;
+    }
+
+    if(smi_id){
+      if(!mod){
+        for(mod of _.keys(this.SMI_STAT[smi_id])){
+          if(!this.SMI_STAT[smi_id][mod]){
+            return false;
+          }
+        }
+        return true;
+      }
+      return this.SMI_STAT[smi_id][mod];
+    }
+
+    for(smi_id of _.keys(this.SMI_STAT)){
+      for(mod of _.keys(this.SMI_STAT[smi_id])){
+        if(!this.SMI_STAT[smi_id][mod]){
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+
+  initSmi(smi_id, mod){
+    let hander = this;
+    return setImmediate(function(){
+      hander.SMI_LIST[smi_id][mod].init(function(){
+        hander.SMI_STAT[smi_id][mod] = true;
+      });
+    });
+  }
+
+  initAll(){
+    for(let smi of _.keys(this.SMI_LIST)){
+      for(let mod of _.keys(this.SMI_LIST[smi])){
+        this.initSmi(smi, mod);
+      }
+    }
   }
 
   has(smi_id, mod, func){
@@ -36,7 +82,8 @@ class SmiHandler extends EventEmitter{
       logger.error("No smi_id is provided to be registered");
       return;
     }
-    this.SMI_LIST[smi_id][mod] = api;
+    _.set(this.SMI_LIST, [smi_id, mod], api);
+    _.set(this.SMI_STAT, [smi_id, mod], false);
     logger.info(`A module '${mod}' from SMI '${smi_id}' is registered`);
   }
 
@@ -55,13 +102,15 @@ class SmiHandler extends EventEmitter{
       }
 
       let mod = "";
+      let rel_path = "";
       try{
         for(mod of smi_info.module){
-          this.register(smi_info.id, mod, require(path.join(smi, mod)));
+          rel_path = path.relative(__dirname, path.resolve(smi, mod));
+          this.register(smi_info.id, mod, require(rel_path));
         }
       }
       catch(e){
-        logger.warn(`Fail to load module ${mod} from ${smi}`);
+        logger.warn(`Fail to load module ${mod} from ${rel_path}`);
         logger.warn(e);
       }
     }

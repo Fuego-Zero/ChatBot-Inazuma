@@ -27,12 +27,30 @@ module.exports = class Chatbot{
   run(){
     logger.info(`${this.name} starts running`);
 
-    this.PLUGIN_HANDLER.execAll();
-	
-	setInterval(()=>{}, 10000);
+    logger.info(`${this.name} inits all SMIs`);
+    this.SMI_HANDLER.initAll();
+
+    let handler = this;
+    let init_loop = setInterval(function(){
+      if(handler.SMI_HANDLER.isReady()){
+        logger.info(`All SMIs are initialized`);
+        clearInterval(init_loop);
+
+        handler.PLUGIN_HANDLER.execAll();
+      }
+    }, 500);
   }
 
-  getApi(smi_id, mod){
-    return this.SMI_HANDLER[smi_id][mod];
+  getSmiApi(smi_id, mod){
+    return this.SMI_HANDLER.getModule(smi_id, mod);
+  }
+
+  handle(event, ...args){
+    logger.debug(`Handle a '${event}' event`);
+    this.SMI_HANDLER.emit(event, ...args);
+  }
+
+  on(event, cb){
+    this.SMI_HANDLER.on(event, cb);
   }
 };
