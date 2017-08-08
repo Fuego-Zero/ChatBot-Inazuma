@@ -18,6 +18,8 @@ module.exports = class Chatbot{
 
     this.SMI_HANDLER = require("../handler/smi-handler");
     this.PLUGIN_HANDLER = require("../handler/plugin-handler");
+
+    this.task_queue = {};
   }
 
   exec(smi_id, mod, func, ...args){
@@ -52,5 +54,9 @@ module.exports = class Chatbot{
 
   on(event, cb){
     this.SMI_HANDLER.on(event, cb);
+  }
+
+  schedule(){
+
   }
 };

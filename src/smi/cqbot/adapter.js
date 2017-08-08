@@ -1,3 +1,4 @@
+const CSON = require("cson");
 const path = require("path");
 function _require(js){
   if(js.startsWith("./")){
@@ -10,6 +11,8 @@ const WebSocketClient = require('websocket').client;
 
 const logger = _require("./util/logger")("cq-bot");
 logger.setLevel(logger.INFO);
+
+const INFO = CSON.parseCSONFile(path.join(__dirname, "info.cson"));
 
 let connection = null;
 
@@ -35,8 +38,24 @@ function init(cb){
         }
     });
 
-    global.bot.on("message.output", function(){
-
+    /**
+     * bundle{
+     *   smi: smi_id,
+     *   mod: module_name,
+     *   data:{
+     *     type: msg_type,
+     *     msg: <string>,
+     *     ...[other essential info according to the msg type]
+     *   }
+     * }
+     */
+    global.bot.on("message.output", function(bundle){
+      if(bundle.smi == INFO.id && bundle.mod == path.basename(__filename, ".js")){
+        let smi_data = bundle.data;
+        if(smi_data.type == "group"){
+          sendGroupMsg(smi_data.gid, smi_data.msg);
+        }
+      }
     });
 
     cb();
