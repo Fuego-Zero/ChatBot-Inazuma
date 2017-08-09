@@ -5,9 +5,7 @@ const CSON = require("cson");
 const fs = require("fs-extra");
 const _ = require("lodash");
 const EventEmitter = require("events");
-
-const path_app_data = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + 'Library/Preferences' : '/var/local');
-const configFile = path.join(path_app_data, global.app_name, "config.cson");
+const configFile = process.cwd();
 
 class SimpleConfig extends EventEmitter{
   constructor(){

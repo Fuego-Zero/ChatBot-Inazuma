@@ -1,0 +1,10 @@
+target:
+[
+    id: 460443703 # 你群有船嗎
+    type: "g" # 'g' for groups; 'i' for individuals; 'd' for discuss groups
+    subsc: ["exercise-reminder@kancolle"]
+  ,
+    id: 595664719 # ！すでのな
+    type: "g"
+    subsc: ["kancolle"] # equal to "*@kancolle"
+]

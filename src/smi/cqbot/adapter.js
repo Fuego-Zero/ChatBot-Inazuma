@@ -1,4 +1,3 @@
-const CSON = require("cson");
 const path = require("path");
 function _require(js){
   if(js.startsWith("./")){
@@ -7,18 +6,45 @@ function _require(js){
   return require(js);
 }
 
+const CSON = require("cson");
 const WebSocketClient = require('websocket').client;
 
+const plugin_for = _require("./smi/lib/plugin-valid");
 const logger = _require("./util/logger")("cq-bot");
 logger.setLevel(logger.INFO);
 
-const INFO = CSON.parseCSONFile(path.join(__dirname, "info.cson"));
+const INFO = readCsonFile(path.join(__dirname, "info.cson"));
+const CONFIG = readCsonFile(path.join(__dirname, "config.cson"));
 
 let connection = null;
+let validators = null;
+
+function readCsonFile(configFile){
+  try{
+    fs.accessSync(configFile, fs.R_OK|fs.W_OK);
+    return CSON.parseCSONFile(configFile);
+    logger.info(`SMI Configs read from ${configFile}`);
+  }
+  catch(e){
+    logger.warn(`Fail to read SMI configs from ${configFile}`);
+    return undefined;
+  }
+}
+
+function initValidator(){
+  if(CONFIG){
+    for(let group of CONFIG.target){
+      for(let patt of group.subsc){
+        plugin_for(`${INFO.id}.${group.id}`).setPattern(patt);
+      }
+    }
+  }
+}
 
 function init(cb){
-  let cq = new WebSocketClient();
+  initValidator();
 
+  let cq = new WebSocketClient();
   cq.on('connect', function(conn) {
     logger.info('CQ is connected');
 
@@ -40,20 +66,18 @@ function init(cb){
 
     /**
      * bundle{
-     *   smi: smi_id,
-     *   mod: module_name,
-     *   data:{
-     *     type: msg_type,
-     *     msg: <string>,
-     *     ...[other essential info according to the msg type]
-     *   }
+     *   src: {
+     *     id: plugin_id,
+     *     mod: mod_name
+     *   },
+     *   msg: <string>,
      * }
      */
     global.bot.on("message.output", function(bundle){
-      if(bundle.smi == INFO.id && bundle.mod == path.basename(__filename, ".js")){
-        let smi_data = bundle.data;
-        if(smi_data.type == "group"){
-          sendGroupMsg(smi_data.gid, smi_data.msg);
+      for(let group of CONFIG.target){
+        if(plugin_for(`${INFO.id}.${group.id}`).isValid(bundle.src.id, bundle.src.mod)){
+          logger.debug(`A message is sent to group with id=${group.id}`);
+          // sendGroupMsg(group.id, bundle.msg);
         }
       }
     });
@@ -64,6 +88,14 @@ function init(cb){
   cq.connect("ws://localhost:25303");
 
   logger.info("CQ-bot is initialized");
+}
+
+function parseSubscSyntax(syntax){
+  if(typeof syntax !== "string") return undefined;
+
+  if(syntax.indexOf("@")){
+
+  }
 }
 
 function sendGroupMsg(group_id, msg){

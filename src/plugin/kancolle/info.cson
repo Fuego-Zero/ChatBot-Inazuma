@@ -1,5 +1,5 @@
-id: "kancolle",
+id: "kancolle"
 module: ["exercise-reminder"]
 author:
-  name: "MomoCow",
+  name: "MomoCow"
   site: "https://momocow.github.io/"
