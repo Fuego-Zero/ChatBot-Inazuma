@@ -5,7 +5,7 @@ const path = require("path");
 const CSON = require("cson");
 
 const ifs = require("../util/fs");
-const logger = require("../util/logger")("smi-handler");
+const logger = require("../util/logger")("plugin-handler");
 const const_proxy = require("../util/const-proxy");
 
 const plugin_dir = path.join(__dirname, "..", "plugin");
@@ -62,17 +62,10 @@ class PluginHandler extends EventEmitter{
         continue;
       }
 
-      let mod = "";
-      let rel_path = "";
-      try{
-        for(mod of plugin_info.module){
-          rel_path = path.relative(__dirname, path.resolve(plugin, mod));
-          this.register(plugin_info.id, mod, require(rel_path));
-        }
-      }
-      catch(e){
-        logger.warn(`Fail to read module '${mod}' from ${rel_path}`);
-        logger.warn(e);
+
+      for(let mod of plugin_info.module){
+        let rel_path = path.relative(__dirname, path.resolve(plugin, mod));
+        this.register(plugin_info.id, mod, require(rel_path));
       }
     }
   }

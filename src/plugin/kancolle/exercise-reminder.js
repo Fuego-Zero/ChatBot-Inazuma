@@ -1,4 +1,5 @@
 const CSON = require("cson");
+const path = require("path");
 
 const INFO = CSON.parseCSONFile(path.join(__dirname, "info.cson"));
 const SMI = "cq-bot";
@@ -11,12 +12,19 @@ function checkExercTime(){
   // let target = new Date(`${current.getFullYear()}.${current.getMonth() + 1}.${current.getDate()} 13:00:00`);
   //
   // if(current >= target){
-		global.bot.handle("message.output", {
+		global.bot.emit("message.output", {
       src: {
         id: INFO.id,
         mod: path.basename(__filename, ".js")
-      }
+      },
 			msg: "演習!!!!!!!!!!!!!!"
+		});
+		global.bot.emit("message.output", {
+      src: {
+        id: INFO.id,
+        mod: path.basename(__filename, ".js")
+      },
+			msg: "阿!!!!!!!!!!!!!!"
 		});
     clearInterval(loop);
   // }

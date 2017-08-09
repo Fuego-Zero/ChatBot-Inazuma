@@ -89,30 +89,25 @@ class SmiHandler extends EventEmitter{
 
   loadFromSmiDir(){
     for(let smi of ifs.getDirList(smi_dir)){
-      let smi_info = {};
-      try{
-        let smi_info_file = path.join(smi, "info.cson");
-        fs.accessSync(smi_info_file, fs.R_OK|fs.W_OK);
-        smi_info = CSON.parseCSONFile(smi_info_file);
-      }
-      catch(e){
-        logger.warn(`Fail to read info.cson from ${smi}`);
-        logger.warn(e);
-        continue;
-      }
+      if(path.basename(smi) != "lib"){
+        let smi_info = {};
+        try{
+          let smi_info_file = path.join(smi, "info.cson");
+          fs.accessSync(smi_info_file, fs.R_OK|fs.W_OK);
+          smi_info = CSON.parseCSONFile(smi_info_file);
+        }
+        catch(e){
+          logger.warn(`Fail to read info.cson from ${smi}`);
+          logger.warn(e);
+          continue;
+        }
 
-      let mod = "";
-      let rel_path = "";
-      try{
-        for(mod of smi_info.module){
-          rel_path = path.relative(__dirname, path.resolve(smi, mod));
+        for(let mod of smi_info.module){
+          let rel_path = path.relative(__dirname, path.resolve(smi, mod));
           this.register(smi_info.id, mod, require(rel_path));
         }
       }
-      catch(e){
-        logger.warn(`Fail to load module ${mod} from ${rel_path}`);
-        logger.warn(e);
-      }
+
     }
   }
 }

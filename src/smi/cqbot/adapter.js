@@ -7,26 +7,41 @@ function _require(js){
 }
 
 const CSON = require("cson");
+const fs = require("fs-extra");
 const WebSocketClient = require('websocket').client;
 
 const plugin_for = _require("./smi/lib/plugin-valid");
 const logger = _require("./util/logger")("cq-bot");
-logger.setLevel(logger.INFO);
 
-const INFO = readCsonFile(path.join(__dirname, "info.cson"));
-const CONFIG = readCsonFile(path.join(__dirname, "config.cson"));
+const INFO = readCSONFile(path.join(__dirname, "info.cson"));
+const CONFIG = readCSONFile(path.join(__dirname, "config.cson"));
 
 let connection = null;
 let validators = null;
 
-function readCsonFile(configFile){
+function readCSONFile(configFile){
+  let acess_control = {
+    set(target, property, value, receiver){
+      logger.error(`You cannot change the '${property}' property of a cson constant object to ${value}`);
+      return false;
+    },
+    get(target, property, receiver){
+      if(target.code){
+        logger.error(`The object read from a cson file has syntax error!`);
+        return undefined;
+      }
+
+      return target[property];
+    }
+  };
   try{
     fs.accessSync(configFile, fs.R_OK|fs.W_OK);
-    return CSON.parseCSONFile(configFile);
-    logger.info(`SMI Configs read from ${configFile}`);
+    return new Proxy(CSON.parseCSONFile(configFile), acess_control);
+    logger.info(`Successfully read ${configFile}`);
   }
   catch(e){
-    logger.warn(`Fail to read SMI configs from ${configFile}`);
+    logger.error(`Fail to read cson from ${configFile}`);
+    logger.error(e);
     return undefined;
   }
 }
@@ -60,7 +75,7 @@ function init(cb){
 
     conn.on('message', function(message) {
         if (message.type === 'utf8') {
-            global.bot.handle("message.input", JSON.parse(message.utf8Data));
+            global.bot.emit("message.input", JSON.parse(message.utf8Data));
         }
     });
 
@@ -77,7 +92,7 @@ function init(cb){
       for(let group of CONFIG.target){
         if(plugin_for(`${INFO.id}.${group.id}`).isValid(bundle.src.id, bundle.src.mod)){
           logger.debug(`A message is sent to group with id=${group.id}`);
-          // sendGroupMsg(group.id, bundle.msg);
+          sendGroupMsg(group.id, bundle.msg);
         }
       }
     });
