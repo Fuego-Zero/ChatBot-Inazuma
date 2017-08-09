@@ -5,7 +5,7 @@ const CSON = require("cson");
 const fs = require("fs-extra");
 const _ = require("lodash");
 const EventEmitter = require("events");
-const configFile = process.cwd();
+const configFile = path.resolve(process.cwd(), "chatbot.config.cson");
 
 class SimpleConfig extends EventEmitter{
   constructor(){
