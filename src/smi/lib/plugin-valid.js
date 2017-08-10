@@ -54,10 +54,8 @@ class PluginValidator{
         let mod_patt = plugin_pair[0].trim();
         let id_patt = plugin_pair[1].trim();
         if(id_patt){
-          let regexp_id_patt = new RegExp(id_patt.replace("*", ".*"));
-          if(plugin_id.match(regexp_id_patt)[0]){
-            let regexp_mod_patt = new RegExp(mod_patt.replace("*", ".*"));
-            if(mod.match(regexp_mod_patt)[0]){
+          if(new RegExp('^' + id_patt.replace("*", ".*") + '$').test(plugin_id)){
+            if(new RegExp('^' + mod_patt.replace("*", ".*") + '$').test(mod)){
               return this.cacheAsValid(exact_id);
             }
             logger.debug(`${this.VALIDATOR_IDENTIFIER} Module named '${mod}' is not matched with the configured pattern '${mod_patt}'`);
@@ -67,8 +65,7 @@ class PluginValidator{
         logger.debug(`${this.VALIDATOR_IDENTIFIER} Plugin id '${plugin_id}' is not matched with the configured pattern '${id_patt}'`);
       }
       else{
-        let regexp_id_patt = new RegExp(patt.trim().replace("*", ".*"));
-        if(plugin_id.match(regexp_id_patt)[0]){
+        if(new RegExp('^' + patt.replace("*", ".*") + '$').test(plugin_id)){
           return this.cacheAsValid(exact_id);
         }
       }

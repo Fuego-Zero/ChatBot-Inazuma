@@ -47,13 +47,22 @@ module.exports = class Chatbot{
     return this.SMI_HANDLER.getModule(smi_id, mod);
   }
 
-  emit(event, ...args){
-    logger.debug(`Handle a '${event}' event`);
+  input(event, ...args){
+    logger.debug(`Handle an input event '${event}'.`);
     this.SMI_HANDLER.emit(event, ...args);
   }
 
-  on(event, cb){
+  onInput(event, cb){
     this.SMI_HANDLER.on(event, cb);
+  }
+
+  output(event, ...args){
+    logger.debug(`Handle an output event '${event}'`);
+    this.PLUGIN_HANDLER.emit(event, ...args);
+  }
+
+  onOutput(event, cb){
+    this.PLUGIN_HANDLER.on(event, cb);
   }
 
   schedule(){

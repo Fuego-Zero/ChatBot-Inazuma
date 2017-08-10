@@ -12,14 +12,14 @@ function checkExercTime(){
   // let target = new Date(`${current.getFullYear()}.${current.getMonth() + 1}.${current.getDate()} 13:00:00`);
   //
   // if(current >= target){
-		global.bot.emit("message.output", {
+		global.bot.output("message.broadcast", {
       src: {
         id: INFO.id,
         mod: path.basename(__filename, ".js")
       },
 			msg: "演習!!!!!!!!!!!!!!"
 		});
-		global.bot.emit("message.output", {
+		global.bot.output("message.broadcast", {
       src: {
         id: INFO.id,
         mod: path.basename(__filename, ".js")

@@ -75,7 +75,20 @@ function init(cb){
 
     conn.on('message', function(message) {
         if (message.type === 'utf8') {
-            global.bot.emit("message.input", JSON.parse(message.utf8Data));
+          let data = JSON.parse(message.utf8Data);
+          if(data.fromQQ && data.fromQQ != CONFIG.bot_qid){
+            logger.debug(`Message input: `, data);
+            global.bot.input("message.input", data);
+
+            // @me
+            if(data.msg.indexOf(`[CQ:at,qq=${CONFIG.bot_qid}]`) >= 0){
+              logger.debug(`Message input: `, data);
+              global.bot.input("message.@me", data);
+            }
+          }
+          else if(data.fromQQ == CONFIG.bot_qid){
+            global.bot.input("message.my", data);
+          }
         }
     });
 
@@ -88,11 +101,20 @@ function init(cb){
      *   msg: <string>,
      * }
      */
-    global.bot.on("message.output", function(bundle){
+    global.bot.onOutput("message.broadcast", function(bundle){
       for(let group of CONFIG.target){
         if(plugin_for(`${INFO.id}.${group.id}`).isValid(bundle.src.id, bundle.src.mod)){
           logger.debug(`A message is sent to group with id=${group.id}`);
           sendGroupMsg(group.id, bundle.msg);
+        }
+      }
+    });
+
+    global.bot.onOutput(`message.${INFO.id}.group`, function(bundle){
+      if(bundle.gid && bundle.src && bundle.msg){
+        if(plugin_for(`${INFO.id}.${bundle.gid}`).isValid(bundle.src.id, bundle.src.mod)){
+        logger.debug(`A message is sent to group with id=${bundle.gid}`);
+        sendGroupMsg(bundle.gid, bundle.msg);
         }
       }
     });
@@ -105,12 +127,19 @@ function init(cb){
   logger.info("CQ-bot is initialized");
 }
 
-function parseSubscSyntax(syntax){
-  if(typeof syntax !== "string") return undefined;
-
-  if(syntax.indexOf("@")){
-
+function getSubscGroups(plugin_id, mod_name){
+  if(!this.isConnected()){
+    return [];
   }
+
+  let subsc_list = [];
+  for(let group of CONFIG.target){
+    if(plugin_for(`${INFO.id}.${group.id}`).isValid(plugin_id, mod_name)){
+      subsc_list.push(group.id);
+    }
+  }
+
+  return subsc_list;
 }
 
 function sendGroupMsg(group_id, msg){
@@ -137,5 +166,5 @@ function isConnected(){
 module.exports = {
   init,
   isConnected,
-  sendGroupMsg
+  getSubscGroups
 };

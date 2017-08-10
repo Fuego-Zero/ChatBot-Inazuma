@@ -7,7 +7,7 @@ function s2t(str){
   let ret = "";
   for(let char of str){
     let found = SIMPLIFIED.indexOf(char);
-    ret += (found >= 0)? TRADITIONAL.substr(found, found + 1): char;
+    ret += (found >= 0)? TRADITIONAL.substr(found, 1): char;
   }
   return ret;
 }

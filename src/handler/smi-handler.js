@@ -74,7 +74,7 @@ class SmiHandler extends EventEmitter{
   }
 
   getModule(smi_id, mod){
-    return this.SMI_LIST[smi_id][mod];
+    return (this.SMI_STAT[smi_id][mod])? this.SMI_LIST[smi_id][mod]: undefined;
   }
 
   register(smi_id, mod = "", api = {}){
